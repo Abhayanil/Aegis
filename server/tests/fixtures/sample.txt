@@ -1,0 +1,11 @@
+This is a sample text file for testing.
+
+It contains multiple paragraphs and sections.
+
+SECTION 1
+This is the first section with some content.
+
+SECTION 2
+This is the second section with more content.
+
+The file has enough content to test various parsing features.
