@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { AlertTriangle, ChevronDown, ChevronRight, ExternalLink } from 'lucide-react';
+import { AlertTriangleIcon, ChevronDownIcon, ChevronRightIcon, ShareIcon } from '@/components/ui/icons';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Risk } from '@/types';
-import { getRiskColor } from '@/lib/utils';
 
 interface RiskAssessmentMatrixProps {
   riskAssessment: {
@@ -29,10 +30,15 @@ export function RiskAssessmentMatrix({ riskAssessment, onSourceClick }: RiskAsse
   };
 
   const getRiskIcon = (severity: string) => {
-    return <AlertTriangle className={`w-4 h-4 ${
-      severity === 'HIGH' ? 'text-danger-400' :
-      severity === 'MEDIUM' ? 'text-warning-400' : 'text-primary-400'
-    }`} />;
+    return <AlertTriangleIcon size={16} className={
+      severity === 'HIGH' ? 'text-red-400' :
+      severity === 'MEDIUM' ? 'text-amber-400' : 'text-blue-400'
+    } />;
+  };
+
+  const getRiskColor = (severity: string) => {
+    return severity === 'HIGH' ? 'border-l-red-500' :
+           severity === 'MEDIUM' ? 'border-l-amber-500' : 'border-l-blue-500';
   };
 
   const RiskCard = ({ risk, index, priority }: { risk: Risk; index: number; priority: 'high' | 'medium' }) => {
@@ -40,7 +46,7 @@ export function RiskAssessmentMatrix({ riskAssessment, onSourceClick }: RiskAsse
     const isExpanded = expandedRisks.has(riskId);
 
     return (
-      <div className={`card border-l-4 ${getRiskColor(risk.severity)} transition-all duration-200`}>
+      <Card className={`border-l-4 ${getRiskColor(risk.severity)} transition-all duration-200`}>
         <div 
           className="p-4 cursor-pointer"
           onClick={() => toggleRisk(riskId)}
@@ -50,50 +56,45 @@ export function RiskAssessmentMatrix({ riskAssessment, onSourceClick }: RiskAsse
               {getRiskIcon(risk.severity)}
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-1">
-                  <h4 className="font-semibold text-primary-100">
+                  <h4 className="font-semibold text-slate-100">
                     {risk.type.replace(/_/g, ' ')}
                   </h4>
-                  <span className={`
-                    px-2 py-1 text-xs font-medium rounded-full
-                    ${risk.severity === 'HIGH' ? 'bg-danger-500/20 text-danger-300' :
-                      risk.severity === 'MEDIUM' ? 'bg-warning-500/20 text-warning-300' :
-                      'bg-primary-500/20 text-primary-300'}
-                  `}>
+                  <Badge variant={
+                    risk.severity === 'HIGH' ? 'destructive' :
+                    risk.severity === 'MEDIUM' ? 'warning' : 'secondary'
+                  }>
                     {risk.severity} PRIORITY
-                  </span>
+                  </Badge>
                 </div>
-                <p className="text-sm text-primary-300 leading-relaxed">
+                <p className="text-sm text-slate-300 leading-relaxed">
                   {risk.description}
                 </p>
               </div>
             </div>
             
-            <button className="ml-4 p-1 text-primary-400 hover:text-primary-200 transition-colors">
+            <button className="ml-4 p-1 text-slate-400 hover:text-slate-200 transition-colors">
               {isExpanded ? (
-                <ChevronDown className="w-4 h-4" />
+                <ChevronDownIcon size={16} />
               ) : (
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRightIcon size={16} />
               )}
             </button>
           </div>
         </div>
 
         {isExpanded && (
-          <div className="px-4 pb-4 border-t border-primary-800/50 mt-4 pt-4 animate-slide-up">
+          <div className="px-4 pb-4 border-t border-slate-700/50 mt-4 pt-4">
             {/* Affected Metrics */}
             {risk.affectedMetrics.length > 0 && (
               <div className="mb-4">
-                <h5 className="text-sm font-medium text-primary-200 mb-2">
+                <h5 className="text-sm font-medium text-slate-200 mb-2">
                   Affected Metrics
                 </h5>
                 <div className="flex flex-wrap gap-2">
                   {risk.affectedMetrics.map((metric, idx) => (
-                    <span 
-                      key={idx}
-                      className="px-2 py-1 bg-primary-800 text-primary-300 text-xs rounded-md"
-                    >
+                    <Badge key={idx} variant="outline">
                       {metric}
-                    </span>
+                    </Badge>
                   ))}
                 </div>
               </div>
@@ -101,10 +102,10 @@ export function RiskAssessmentMatrix({ riskAssessment, onSourceClick }: RiskAsse
 
             {/* Suggested Mitigation */}
             <div className="mb-4">
-              <h5 className="text-sm font-medium text-primary-200 mb-2">
+              <h5 className="text-sm font-medium text-slate-200 mb-2">
                 Suggested Mitigation
               </h5>
-              <p className="text-sm text-primary-400 leading-relaxed">
+              <p className="text-sm text-slate-400 leading-relaxed">
                 {risk.suggestedMitigation}
               </p>
             </div>
@@ -112,7 +113,7 @@ export function RiskAssessmentMatrix({ riskAssessment, onSourceClick }: RiskAsse
             {/* Source Documents */}
             {risk.sourceDocuments.length > 0 && (
               <div>
-                <h5 className="text-sm font-medium text-primary-200 mb-2">
+                <h5 className="text-sm font-medium text-slate-200 mb-2">
                   Source References
                 </h5>
                 <div className="space-y-1">
@@ -120,9 +121,9 @@ export function RiskAssessmentMatrix({ riskAssessment, onSourceClick }: RiskAsse
                     <button
                       key={idx}
                       onClick={() => onSourceClick(source)}
-                      className="flex items-center space-x-2 text-xs text-accent-400 hover:text-accent-300 transition-colors"
+                      className="flex items-center space-x-2 text-xs text-blue-400 hover:text-blue-300 transition-colors"
                     >
-                      <ExternalLink className="w-3 h-3" />
+                      <ShareIcon size={12} />
                       <span>{source}</span>
                     </button>
                   ))}
@@ -131,7 +132,7 @@ export function RiskAssessmentMatrix({ riskAssessment, onSourceClick }: RiskAsse
             )}
           </div>
         )}
-      </div>
+      </Card>
     );
   };
 
@@ -143,113 +144,111 @@ export function RiskAssessmentMatrix({ riskAssessment, onSourceClick }: RiskAsse
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <AlertTriangle className="w-6 h-6 text-warning-400" />
-          <h2 className="text-2xl font-bold text-primary-100">
-            Risk Assessment Matrix
-          </h2>
-        </div>
-        
-        <div className="flex items-center space-x-4 text-sm">
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-danger-500 rounded-full"></div>
-            <span className="text-primary-400">{riskCounts.high} High Priority</span>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <AlertTriangleIcon size={20} className="text-amber-400" />
+          Risk Assessment Matrix
+          <div className="flex items-center space-x-4 text-sm ml-auto">
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+              <span className="text-slate-400">{riskCounts.high} High Priority</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
+              <span className="text-slate-400">{riskCounts.medium} Medium Priority</span>
+            </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-warning-500 rounded-full"></div>
-            <span className="text-primary-400">{riskCounts.medium} Medium Priority</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {/* Risk Summary */}
+        <Card className="p-6 bg-gradient-to-r from-amber-500/5 to-red-500/5 border-amber-500/20">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-red-400 mb-1">
+                {riskCounts.high}
+              </div>
+              <div className="text-sm text-slate-400">
+                High Priority Risks
+              </div>
+            </div>
+            
+            <div className="text-center">
+              <div className="text-2xl font-bold text-amber-400 mb-1">
+                {riskCounts.medium}
+              </div>
+              <div className="text-sm text-slate-400">
+                Medium Priority Risks
+              </div>
+            </div>
+            
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-400 mb-1">
+                {riskCounts.total}
+              </div>
+              <div className="text-sm text-slate-400">
+                Total Identified Risks
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </Card>
 
-      {/* Risk Summary */}
-      <div className="card p-6 bg-gradient-to-r from-warning-500/5 to-danger-500/5 border-warning-500/20">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-danger-400 mb-1">
-              {riskCounts.high}
-            </div>
-            <div className="text-sm text-primary-400">
-              High Priority Risks
-            </div>
-          </div>
-          
-          <div className="text-center">
-            <div className="text-2xl font-bold text-warning-400 mb-1">
-              {riskCounts.medium}
-            </div>
-            <div className="text-sm text-primary-400">
-              Medium Priority Risks
+        {/* High Priority Risks */}
+        {riskAssessment.highPriorityRisks.length > 0 && (
+          <div>
+            <h3 className="text-lg font-semibold text-red-300 mb-4 flex items-center space-x-2">
+              <AlertTriangleIcon size={20} />
+              <span>High Priority Risks</span>
+            </h3>
+            <div className="space-y-4">
+              {riskAssessment.highPriorityRisks.map((risk, index) => (
+                <RiskCard 
+                  key={`high-${index}`}
+                  risk={risk} 
+                  index={index} 
+                  priority="high" 
+                />
+              ))}
             </div>
           </div>
-          
-          <div className="text-center">
-            <div className="text-2xl font-bold text-primary-300 mb-1">
-              {riskCounts.total}
-            </div>
-            <div className="text-sm text-primary-400">
-              Total Identified Risks
-            </div>
-          </div>
-        </div>
-      </div>
+        )}
 
-      {/* High Priority Risks */}
-      {riskAssessment.highPriorityRisks.length > 0 && (
-        <div>
-          <h3 className="text-lg font-semibold text-danger-300 mb-4 flex items-center space-x-2">
-            <AlertTriangle className="w-5 h-5" />
-            <span>High Priority Risks</span>
-          </h3>
-          <div className="space-y-4">
-            {riskAssessment.highPriorityRisks.map((risk, index) => (
-              <RiskCard 
-                key={`high-${index}`}
-                risk={risk} 
-                index={index} 
-                priority="high" 
-              />
-            ))}
+        {/* Medium Priority Risks */}
+        {riskAssessment.mediumPriorityRisks.length > 0 && (
+          <div>
+            <h3 className="text-lg font-semibold text-amber-300 mb-4 flex items-center space-x-2">
+              <AlertTriangleIcon size={20} />
+              <span>Medium Priority Risks</span>
+            </h3>
+            <div className="space-y-4">
+              {riskAssessment.mediumPriorityRisks.map((risk, index) => (
+                <RiskCard 
+                  key={`medium-${index}`}
+                  risk={risk} 
+                  index={index} 
+                  priority="medium" 
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Medium Priority Risks */}
-      {riskAssessment.mediumPriorityRisks.length > 0 && (
-        <div>
-          <h3 className="text-lg font-semibold text-warning-300 mb-4 flex items-center space-x-2">
-            <AlertTriangle className="w-5 h-5" />
-            <span>Medium Priority Risks</span>
-          </h3>
-          <div className="space-y-4">
-            {riskAssessment.mediumPriorityRisks.map((risk, index) => (
-              <RiskCard 
-                key={`medium-${index}`}
-                risk={risk} 
-                index={index} 
-                priority="medium" 
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* No Risks Message */}
-      {allRisks.length === 0 && (
-        <div className="card p-8 text-center">
-          <div className="w-16 h-16 bg-success-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <AlertTriangle className="w-8 h-8 text-success-400" />
-          </div>
-          <h3 className="text-lg font-semibold text-primary-100 mb-2">
-            No Significant Risks Identified
-          </h3>
-          <p className="text-primary-400">
-            The analysis did not identify any high or medium priority risks based on the available information.
-          </p>
-        </div>
-      )}
-    </div>
+        {/* No Risks Message */}
+        {allRisks.length === 0 && (
+          <Card className="p-8 text-center">
+            <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertTriangleIcon size={32} className="text-green-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-slate-100 mb-2">
+              No Significant Risks Identified
+            </h3>
+            <p className="text-slate-400">
+              The analysis did not identify any high or medium priority risks based on the available information.
+            </p>
+          </Card>
+        )}
+      </CardContent>
+    </Card>
   );
 }
