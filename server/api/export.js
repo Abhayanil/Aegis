@@ -1,5 +1,10 @@
 // Vercel serverless function for export functionality
-import { logger } from '../src/utils/logger.js';
+
+// Simple logger
+const logger = {
+  info: (message, data) => console.log(`[INFO] ${message}`, data || ''),
+  error: (message, error) => console.error(`[ERROR] ${message}`, error || ''),
+};
 
 export default async function handler(req, res) {
   // Enable CORS
