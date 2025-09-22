@@ -1,90 +1,48 @@
-// Deal memo data model
-import { RecommendationType, FundingStage } from '../types/enums.js';
-import { RiskFlag } from './RiskFlag.js';
-import { BenchmarkComparison } from './BenchmarkData.js';
-import { BaseEntity } from '../types/interfaces.js';
+/**
+ * Deal Memo Model
+ * 
+ * Represents the structured output of the AI deal analysis system.
+ */
 
-export interface DealMemoSummary {
-  companyName: string;
-  oneLiner: string;
-  sector: string;
-  stage: FundingStage;
-  signalScore: number;
-  recommendation: RecommendationType;
-  confidenceLevel: number;
-  lastUpdated: Date;
-}
-
-export interface GrowthPotential {
-  upsideSummary: string;
-  growthTimeline: string;
-  keyDrivers: string[];
-  scalabilityFactors: string[];
-  marketExpansionOpportunity: string;
-  revenueProjection: {
-    year1: number;
-    year3: number;
-    year5: number;
-  };
-}
-
-export interface RiskAssessment {
-  overallRiskScore: number;
-  highPriorityRisks: RiskFlag[];
-  mediumPriorityRisks: RiskFlag[];
-  lowPriorityRisks: RiskFlag[];
-  riskMitigationPlan: string[];
-}
-
-export interface InvestmentRecommendation {
-  narrative: string;
-  investmentThesis: string;
-  idealCheckSize: string;
-  idealValuationCap: string;
-  suggestedTerms: string[];
-  keyDiligenceQuestions: string[];
-  followUpActions: string[];
-  timelineToDecision: string;
-}
-
-export interface AnalysisWeightings {
-  marketOpportunity: number;  // Default: 25%
-  team: number;              // Default: 25%
-  traction: number;          // Default: 20%
-  product: number;           // Default: 15%
-  competitivePosition: number; // Default: 15%
-}
-
-export interface DealMemo extends BaseEntity {
+export interface DealMemo {
   aegisDealMemo: {
-    summary: DealMemoSummary;
-    keyBenchmarks: BenchmarkComparison[];
-    growthPotential: GrowthPotential;
-    riskAssessment: RiskAssessment;
-    investmentRecommendation: InvestmentRecommendation;
-    analysisWeightings: AnalysisWeightings;
-    metadata: {
-      generatedBy: string;
-      analysisVersion: string;
-      sourceDocuments: string[];
-      processingTime: number;
-      dataQuality: number;
+    summary: {
+      companyName: string;
+      oneLiner: string;
+      signalScore: number;
+      recommendation: 'STRONG_BUY' | 'BUY' | 'HOLD' | 'PASS';
+    };
+    keyBenchmarks: Benchmark[];
+    growthPotential: {
+      upsideSummary: string;
+      growthTimeline: string;
+    };
+    riskAssessment: {
+      highPriorityRisks: Risk[];
+      mediumPriorityRisks: Risk[];
+    };
+    investmentRecommendation: {
+      narrative: string;
+      keyDiligenceQuestions: string[];
+      idealCheckSize?: string;
+      idealValuationCap?: string;
     };
   };
 }
 
-export interface DealMemoInput {
-  summary: DealMemoSummary;
-  keyBenchmarks: BenchmarkComparison[];
-  growthPotential: GrowthPotential;
-  riskAssessment: RiskAssessment;
-  investmentRecommendation: InvestmentRecommendation;
-  analysisWeightings: AnalysisWeightings;
-  metadata: {
-    generatedBy: string;
-    analysisVersion: string;
-    sourceDocuments: string[];
-    processingTime: number;
-    dataQuality: number;
-  };
+export interface Benchmark {
+  metric: string;
+  companyValue: number | string;
+  sectorMedian: number | string;
+  percentileRank: number;
+  interpretation: string;
+}
+
+export interface Risk {
+  type: string;
+  severity: 'HIGH' | 'MEDIUM' | 'LOW';
+  description: string;
+  affectedMetrics: string[];
+  suggestedMitigation: string;
+  sourceDocuments: string[];
 }

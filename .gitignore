@@ -143,4 +143,22 @@ pnpm-debug.log*
 server/node_modules/
 server/npm-debug.log*
 server/.env
-server/.env.local
+server/.env.local# De
+ployment
+.vercel
+.railway
+
+# Google Cloud
+service-account.json
+*.json.key
+gcp-key.json
+
+# Uploads and temp files
+uploads/
+temp/
+tmp/
+
+# Test reports
+test-results/
+coverage/
+reports/
